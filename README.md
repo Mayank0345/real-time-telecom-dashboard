@@ -143,32 +143,33 @@ Maven packages the files from `frontend/` into Spring Boot's `static/` classpath
 
 ## Deployment preparation
 
-The repository includes a [Dockerfile](./Dockerfile) for the Spring Boot API and [Vercel configuration](./frontend/vercel.json) for the standalone static frontend. No cloud services are provisioned by this repository; deployment requires your Render, Vercel, and managed-MySQL accounts.
+The repository includes a [Dockerfile](./Dockerfile) for the Spring Boot API and [Vercel configuration](./frontend/vercel.json) for the standalone static frontend. Local development continues to use MySQL. The backend also supports PostgreSQL so a Render deployment can use Render PostgreSQL.
 
-### 1. Provision MySQL
+### 1. Provision PostgreSQL on Render
 
-Create a managed MySQL 8 database with your chosen provider. Connect to it and run `database/telecom_dashboard.sql` to create the database and tables. Copy the provider's JDBC connection URL and credentials into the Render environment settings; do not commit them to GitHub.
+Create a PostgreSQL database on Render and select its **Free** plan if available. Keep the database and web service in the same region and use the database's internal hostname for the backend connection. Render's free database has storage, connection, and lifetime limits; check the current dashboard terms and back up any data you want to keep. Never commit database credentials to GitHub.
 
 ### 2. Deploy the backend to Render
 
-Create a Render **Web Service** from the GitHub repository and select **Docker** as the runtime. Use the repository root as the Docker context and `Dockerfile` as the Dockerfile path. Render supplies `PORT`; the container uses it automatically. Set these environment variables in Render:
+Create a Render **Web Service** from the GitHub repository and select **Docker** as the runtime. Use the repository root as the Docker context and `Dockerfile` as the Dockerfile path. Select the **Free** instance type if available; do not select a paid plan. Render supplies `PORT`; the container uses it automatically. Set these environment variables in Render:
 
 | Variable | Value |
 | --- | --- |
-| `DB_URL` | Managed provider's JDBC URL, for example `jdbc:mysql://HOST:3306/telecom_dashboard?sslMode=REQUIRED` |
-| `DB_USERNAME` | Managed MySQL username |
-| `DB_PASSWORD` | Managed MySQL password (secret) |
-| `JPA_DDL_AUTO` | `validate` after the SQL schema has been applied |
+| `DB_URL` | `jdbc:postgresql://HOST:5432/DATABASE` using Render's internal database host and name |
+| `DB_DRIVER` | `org.postgresql.Driver` |
+| `DB_USERNAME` | Render PostgreSQL username |
+| `DB_PASSWORD` | Render PostgreSQL password (secret) |
+| `JPA_DDL_AUTO` | `update` for the first deployment so Hibernate can create the tables |
 | `JPA_SHOW_SQL` | `false` |
 | `CORS_ALLOWED_ORIGINS` | Your exact Vercel production origin, e.g. `https://your-dashboard.vercel.app` |
 
-Use the JDBC URL and TLS options specified by the database provider. Set Render's health check path to `/api/regions`. After deploy, confirm `https://YOUR-API.onrender.com/api/dashboard/stats` returns JSON.
+Set Render's health check path to `/api/regions`. After deploy, confirm `https://YOUR-API.onrender.com/api/dashboard/stats` returns JSON. Free web services may sleep when idle, so the first request after inactivity can take a while. Free database availability and retention limits can change; confirm them in Render before creating resources.
 
 ### 3. Deploy the frontend to Vercel
 
 Create a Vercel project from the same GitHub repository and set its **Root Directory** to `frontend`. It is a static HTML project; use `index.html` as the entry point and the root (`.`) as the output directory. In `frontend/config.js`, set `window.TELECOM_API_BASE_URL` to the deployed Render origin (for example `https://YOUR-API.onrender.com`) and redeploy. This value is public API configuration, not a secret.
 
-Make sure the resulting Vercel origin exactly matches `CORS_ALLOWED_ORIGINS` in Render. For Vercel preview deployments, add the specific preview origin(s) you intend to use to that environment variable and redeploy the backend. Do not use wildcard origins for a public production API.
+Make sure the resulting Vercel origin exactly matches `CORS_ALLOWED_ORIGINS` in Render. For Vercel preview deployments, add the specific preview origin(s) you intend to use to that environment variable and redeploy the backend. Do not use wildcard origins for a public production API. Use Vercel's Hobby plan only if it is available to your account at no charge.
 
 ### 4. Verify the deployed site
 
