@@ -2,6 +2,10 @@
 
 A beginner-friendly Java 17, Spring Boot, MySQL, and Chart.js project. It generates sample subscribers, network usage, and outages; saves them to MySQL; and serves a small dashboard backed by REST APIs.
 
+## Live Demo
+
+[Open the live telecom dashboard](https://real-time-telecom-dashboard.vercel.app/)
+
 ## What is included
 
 - REST endpoints for dashboard statistics and regions
