@@ -161,7 +161,7 @@ Create a Render **Web Service** from the GitHub repository and select **Docker**
 | `DB_PASSWORD` | Neon PostgreSQL password (secret) |
 | `JPA_DDL_AUTO` | `update` for the first deployment so Hibernate can create the tables |
 | `JPA_SHOW_SQL` | `false` |
-| `CORS_ALLOWED_ORIGINS` | Your exact Vercel production origin, e.g. `https://your-dashboard.vercel.app` |
+| `CORS_ALLOWED_ORIGINS` | Additional allowed origins, comma-separated (for example, localhost or specific Vercel preview URLs). The production dashboard origin `https://real-time-telecom-dashboard.vercel.app` is included by the backend. |
 
 Set Render's health check path to `/api/regions`. After deploy, confirm `https://YOUR-API.onrender.com/api/dashboard/stats` returns JSON. Free web services may sleep when idle, so the first request after inactivity can take a while. Neon Free has usage and storage limits; confirm the current terms and monitor usage.
 
@@ -169,7 +169,7 @@ Set Render's health check path to `/api/regions`. After deploy, confirm `https:/
 
 Create a Vercel project from the same GitHub repository and set its **Root Directory** to `frontend`. It is a static HTML project; use `index.html` as the entry point and the root (`.`) as the output directory. `frontend/config.js` uses the Render API outside localhost and keeps local development same-origin.
 
-Make sure the resulting Vercel origin exactly matches `CORS_ALLOWED_ORIGINS` in Render. For Vercel preview deployments, add the specific preview origin(s) you intend to use to that environment variable and redeploy the backend. Do not use wildcard origins for a public production API. Use Vercel's Hobby plan only if it is available to your account at no charge.
+The backend allows the production dashboard origin `https://real-time-telecom-dashboard.vercel.app` alongside the origins configured by `CORS_ALLOWED_ORIGINS`. For Vercel preview deployments, add the specific preview origin(s) you intend to use to that environment variable and redeploy the backend. Do not use wildcard origins for a public production API. Use Vercel's Hobby plan only if it is available to your account at no charge.
 
 ### 4. Verify the deployed site
 
