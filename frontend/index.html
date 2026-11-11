@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Live telecom network usage and outage dashboard">
+    <title>Telecom Network Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/config.js"></script>
+    <script src="/script.js" defer></script>
+</head>
+<body>
+<main class="shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">NETWORK OPERATIONS</p>
+            <h1>Telecom dashboard</h1>
+            <p class="subtitle">Live view of subscriber usage and network health</p>
+        </div>
+        <div class="live-status"><span class="live-dot"></span> Live updates</div>
+    </header>
+
+    <section class="filters" aria-label="Dashboard filters">
+        <label>From <input id="from-date" type="date"></label>
+        <label>To <input id="to-date" type="date"></label>
+        <label>Region
+            <select id="region-filter">
+                <option value="">All regions</option>
+            </select>
+        </label>
+        <button id="apply-filters" type="button">Apply filters</button>
+        <span id="last-updated" class="updated"></span>
+    </section>
+
+    <p id="error-message" class="error-message" role="alert" hidden></p>
+
+    <section class="stats-grid" aria-label="Network summary">
+        <article class="stat-card">
+            <span class="stat-label">Total subscribers</span>
+            <strong id="subscriber-count">—</strong>
+            <span class="stat-note">In selected region</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Active users</span>
+            <strong id="active-subscriber-count">—</strong>
+            <span class="stat-note">Active subscribers</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Inactive users</span>
+            <strong id="inactive-subscriber-count">—</strong>
+            <span class="stat-note">Not currently active</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Total data usage</span>
+            <strong id="usage-total">—</strong>
+            <span class="stat-note">Across selected dates</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Average call duration</span>
+            <strong id="average-call-duration">—</strong>
+            <span class="stat-note">Minutes per usage record</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">SMS messages</span>
+            <strong id="sms-total">—</strong>
+            <span class="stat-note">Across selected dates</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Network outages</span>
+            <strong id="outage-count">—</strong>
+            <span class="stat-note">Currently active</span>
+        </article>
+    </section>
+
+    <section class="charts-grid">
+        <article class="panel chart-panel">
+            <div class="panel-heading">
+                <div><h2>Usage trend</h2><p>Daily mobile data consumption</p></div>
+                <span class="unit-label">MB</span>
+            </div>
+            <div class="chart-wrap"><canvas id="usage-chart" aria-label="Daily usage trend"></canvas></div>
+        </article>
+        <article class="panel chart-panel">
+            <div class="panel-heading">
+                <div><h2>Regional usage</h2><p>Consumption by region</p></div>
+                <span class="unit-label">MB</span>
+            </div>
+            <div class="chart-wrap"><canvas id="region-chart" aria-label="Usage by region"></canvas></div>
+        </article>
+        <article class="panel chart-panel monthly-panel">
+            <div class="panel-heading">
+                <div><h2>Monthly usage trend</h2><p>Rolling 12-month mobile data consumption</p></div>
+                <span class="unit-label">GB</span>
+            </div>
+            <div class="chart-wrap"><canvas id="monthly-chart" aria-label="Monthly usage trend"></canvas></div>
+        </article>
+    </section>
+
+    <section class="panel regional-panel">
+        <div class="panel-heading">
+            <div><h2>Regional usage &amp; network status</h2><p>Usage for the selected dates and current network health</p></div>
+            <span class="unit-label">GB</span>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Region</th><th>Data usage</th><th>Network status</th></tr></thead>
+                <tbody id="region-rows"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel recent-panel">
+        <div class="panel-heading">
+            <div><h2>Recent usage records</h2><p>Latest subscriber activity in the selected period</p></div>
+            <span class="incident-count">Latest 20</span>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Time</th><th>Subscriber</th><th>Region</th><th>Data</th><th>Call</th><th>SMS</th></tr></thead>
+                <tbody id="recent-usage-rows"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel outages-panel">
+        <div class="panel-heading">
+            <div><h2>Network outages</h2><p>Recent incidents in the selected period</p></div>
+            <span id="incident-count" class="incident-count">0 incidents</span>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Region</th><th>Issue</th><th>Started</th><th>Status</th></tr></thead>
+                <tbody id="outage-rows"></tbody>
+            </table>
+        </div>
+    </section>
+    <footer>Sample data is simulated and refreshes automatically every 10 seconds.</footer>
+</main>
+</body>
+</html>
