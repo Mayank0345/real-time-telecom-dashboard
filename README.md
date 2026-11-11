@@ -167,7 +167,7 @@ Set Render's health check path to `/api/regions`. After deploy, confirm `https:/
 
 ### 3. Deploy the frontend to Vercel
 
-Create a Vercel project from the same GitHub repository and set its **Root Directory** to `frontend`. It is a static HTML project; use `index.html` as the entry point and the root (`.`) as the output directory. In `frontend/config.js`, set `window.TELECOM_API_BASE_URL` to the deployed Render origin (for example `https://YOUR-API.onrender.com`) and redeploy. This value is public API configuration, not a secret.
+Create a Vercel project from the same GitHub repository and set its **Root Directory** to `frontend`. It is a static HTML project; use `index.html` as the entry point and the root (`.`) as the output directory. `frontend/config.js` uses the Render API outside localhost and keeps local development same-origin.
 
 Make sure the resulting Vercel origin exactly matches `CORS_ALLOWED_ORIGINS` in Render. For Vercel preview deployments, add the specific preview origin(s) you intend to use to that environment variable and redeploy the backend. Do not use wildcard origins for a public production API. Use Vercel's Hobby plan only if it is available to your account at no charge.
 
