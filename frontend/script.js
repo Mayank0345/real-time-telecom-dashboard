@@ -191,6 +191,30 @@ function renderRegionalStatus(regions) {
     }
 }
 
+function renderRecentUsage(records) {
+    const rows = document.querySelector("#recent-usage-rows");
+    rows.replaceChildren();
+
+    if (records.length === 0) {
+        const row = rows.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 6;
+        cell.className = "empty-row";
+        cell.textContent = "No usage records for this period.";
+        return;
+    }
+
+    for (const record of records) {
+        const row = rows.insertRow();
+        row.insertCell().textContent = new Date(record.timestamp).toLocaleString();
+        row.insertCell().textContent = record.subscriberName;
+        row.insertCell().textContent = record.regionName;
+        row.insertCell().textContent = `${record.dataUsage.toLocaleString()} MB`;
+        row.insertCell().textContent = `${record.callDuration} min`;
+        row.insertCell().textContent = record.smsCount.toLocaleString();
+    }
+}
+
 function renderOutages(outages) {
     const rows = document.querySelector("#outage-rows");
     rows.replaceChildren();
@@ -206,34 +230,10 @@ function renderOutages(outages) {
         return;
     }
 
-    function renderRecentUsage(records) {
-        const rows = document.querySelector("#recent-usage-rows");
-        rows.replaceChildren();
-
-        if (records.length === 0) {
-            const row = rows.insertRow();
-            const cell = row.insertCell();
-            cell.colSpan = 6;
-            cell.className = "empty-row";
-            cell.textContent = "No usage records for this period.";
-            return;
-        }
-
-        for (const record of records) {
-            const row = rows.insertRow();
-            row.insertCell().textContent = new Date(record.timestamp).toLocaleString();
-            row.insertCell().textContent = record.subscriberName;
-            row.insertCell().textContent = record.regionName;
-            row.insertCell().textContent = `${record.dataUsage.toLocaleString()} MB`;
-            row.insertCell().textContent = `${record.callDuration} min`;
-            row.insertCell().textContent = record.smsCount.toLocaleString();
-        }
-    }
-
     for (const outage of outages) {
         const row = rows.insertRow();
         row.insertCell().textContent = outage.regionName;
-        row.insertCell().textContent = outage.description;
+        row.insertCell().textContent = outage.reason;
         row.insertCell().textContent = new Date(outage.startTime).toLocaleString();
         const statusCell = row.insertCell();
         const status = document.createElement("span");
