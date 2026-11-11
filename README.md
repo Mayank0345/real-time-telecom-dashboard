@@ -143,11 +143,11 @@ Maven packages the files from `frontend/` into Spring Boot's `static/` classpath
 
 ## Deployment preparation
 
-The repository includes a [Dockerfile](./Dockerfile) for the Spring Boot API and [Vercel configuration](./frontend/vercel.json) for the standalone static frontend. Local development continues to use MySQL. The backend also supports PostgreSQL so a Render deployment can use Render PostgreSQL.
+The repository includes a [Dockerfile](./Dockerfile) for the Spring Boot API and [Vercel configuration](./frontend/vercel.json) for the standalone static frontend. Local development continues to use MySQL. The backend also supports PostgreSQL so a free Render web service can use a Neon Free database.
 
-### 1. Provision PostgreSQL on Render
+### 1. Provision PostgreSQL on Neon
 
-Create a PostgreSQL database on Render and select its **Free** plan if available. Keep the database and web service in the same region and use the database's internal hostname for the backend connection. Render's free database has storage, connection, and lifetime limits; check the current dashboard terms and back up any data you want to keep. Never commit database credentials to GitHub.
+Create a PostgreSQL project on Neon's **Free** plan. Neon currently advertises a $0 plan with per-project compute and storage quotas and no credit card requirement; check the current pricing and limits before use. From the Neon dashboard, get the connection details and keep the password private. Never commit database credentials to GitHub.
 
 ### 2. Deploy the backend to Render
 
@@ -155,15 +155,15 @@ Create a Render **Web Service** from the GitHub repository and select **Docker**
 
 | Variable | Value |
 | --- | --- |
-| `DB_URL` | `jdbc:postgresql://HOST:5432/DATABASE` using Render's internal database host and name |
+| `DB_URL` | `jdbc:postgresql://HOST/DATABASE?sslmode=require` using Neon's connection host and database name |
 | `DB_DRIVER` | `org.postgresql.Driver` |
-| `DB_USERNAME` | Render PostgreSQL username |
-| `DB_PASSWORD` | Render PostgreSQL password (secret) |
+| `DB_USERNAME` | Neon PostgreSQL username |
+| `DB_PASSWORD` | Neon PostgreSQL password (secret) |
 | `JPA_DDL_AUTO` | `update` for the first deployment so Hibernate can create the tables |
 | `JPA_SHOW_SQL` | `false` |
 | `CORS_ALLOWED_ORIGINS` | Your exact Vercel production origin, e.g. `https://your-dashboard.vercel.app` |
 
-Set Render's health check path to `/api/regions`. After deploy, confirm `https://YOUR-API.onrender.com/api/dashboard/stats` returns JSON. Free web services may sleep when idle, so the first request after inactivity can take a while. Free database availability and retention limits can change; confirm them in Render before creating resources.
+Set Render's health check path to `/api/regions`. After deploy, confirm `https://YOUR-API.onrender.com/api/dashboard/stats` returns JSON. Free web services may sleep when idle, so the first request after inactivity can take a while. Neon Free has usage and storage limits; confirm the current terms and monitor usage.
 
 ### 3. Deploy the frontend to Vercel
 
